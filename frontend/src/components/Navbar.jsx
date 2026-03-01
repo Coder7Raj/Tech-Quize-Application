@@ -1,4 +1,4 @@
-import { Award, LogIn, LogOut, Menu, PanelsTopLeft, X } from "lucide-react";
+import { Award, GitBranchIcon, LogIn, LogOut, Menu, PanelsTopLeft, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { navbarStyles } from "../assets/dummyStyles";
@@ -14,6 +14,7 @@ const Navbar = () => {
       const u = localStorage.getItem("authToken");
       setLoggedIn(!!u);
     } catch (error) {
+      console.error(error);
       setLoggedIn(false);
     }
 
@@ -31,6 +32,7 @@ const Navbar = () => {
       localStorage.removeItem("authToken");
       localStorage.removeItem("currentUser");
     } catch (error) {
+      console.error(error);
       // ignore
     }
 
@@ -42,6 +44,7 @@ const Navbar = () => {
     try {
       navigate("/login");
     } catch (error) {
+      console.error(error);
       window.location.href = "/login";
     }
   };
@@ -60,7 +63,7 @@ const Navbar = () => {
       <div className={navbarStyles.container}>
         <div className={navbarStyles.logoContainer}>
           <Link to="/" className={navbarStyles.logoButton}>
-            <div className={navbarStyles.logoInner}></div>
+            {/* <div className={navbarStyles.logoInner}></div> */}
             <img
               src={techQuizeLogo}
               alt=""
@@ -77,21 +80,24 @@ const Navbar = () => {
 
         <div className={navbarStyles.desktopButtonsContainer}>
           <div className={navbarStyles.spacer}></div>
+              <NavLink to="/contributor" className={navbarStyles.resultsButton}>
+             <GitBranchIcon className={navbarStyles.buttonIcon}/>
+             Contributor</NavLink>
+          {loggedIn && (
+            <>
+            
+              <NavLink to="/result" className={navbarStyles.resultsButton}>
+                <Award className={navbarStyles.buttonIcon} />
+                My Result
+              </NavLink>
 
-       {loggedIn && (
-  <>
-    <NavLink to="/result" className={navbarStyles.resultsButton}>
-      <Award className={navbarStyles.buttonIcon} />
-      My Result
-    </NavLink>
+              <NavLink to="/profile" className={navbarStyles.resultsButton}>
+                <PanelsTopLeft className={navbarStyles.buttonIcon} />
+                Profile
+              </NavLink>
 
-    <NavLink to="/profile" className={navbarStyles.resultsButton}>
-      <PanelsTopLeft className={navbarStyles.buttonIcon} />
-      Profile
-    </NavLink>
-  </>
-)}
-
+            </>
+          )}
 
           {loggedIn ? (
             <button
@@ -119,50 +125,75 @@ const Navbar = () => {
               <Menu className={navbarStyles.menuIcon} />
             )}
           </button>
+{menuOpen && (
+  <div className={navbarStyles.mobileMenuPanel}>
+    <ul className={navbarStyles.mobileMenuList}>
+      
+      {/* ALWAYS VISIBLE: Contributor */}
+      <li>
+        <NavLink
+          to="/contributor"
+          className={navbarStyles.mobileMenuItem}
+          onClick={() => setMenuOpen(false)}
+        >
+          <GitBranchIcon className={navbarStyles.mobileMenuIcon} />
+          Contributor
+        </NavLink>
+      </li>
 
-          {menuOpen && (
-            <div className={navbarStyles.mobileMenuPanel}>
-              <ul className={navbarStyles.mobileMenuList}>
-                <li>
-                  <NavLink
-                    to="/result"
-                    className={navbarStyles.mobileMenuItem}
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    <Award className={navbarStyles.mobileMenuIcon} />
-                    My result
-                  </NavLink>
-                    <NavLink to="/profile" className={navbarStyles.mobileMenuItem}>
-      <PanelsTopLeft className={navbarStyles.mobileMenuIcon} />
-      Profile
-    </NavLink>
-                </li>
-                {loggedIn ? (
-                  <li>
-                    <button
-                      type="button"
-                      onClick={handleLogout}
-                      className={navbarStyles.mobileMenuItem}
-                    >
-                      <LogOut className={navbarStyles.mobileMenuIcon} />
-                      Logout
-                    </button>
-                  </li>
-                ) : (
-                  <li>
-                    <NavLink
-                      to="/login"
-                      className={navbarStyles.mobileMenuItem}
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      <LogIn className={navbarStyles.mobileMenuIcon} />
-                      Login
-                    </NavLink>
-                  </li>
-                )}
-              </ul>
-            </div>
-          )}
+      {/* ONLY VISIBLE IF LOGGED IN: Result & Profile */}
+      {loggedIn && (
+        <>
+          <li>
+            <NavLink
+              to="/result"
+              className={navbarStyles.mobileMenuItem}
+              onClick={() => setMenuOpen(false)}
+            >
+              <Award className={navbarStyles.mobileMenuIcon} />
+              My result
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/profile"
+              className={navbarStyles.mobileMenuItem}
+              onClick={() => setMenuOpen(false)}
+            >
+              <PanelsTopLeft className={navbarStyles.mobileMenuIcon} />
+              Profile
+            </NavLink>
+          </li>
+        </>
+      )}
+
+      {/* TOGGLE VISIBILITY: Logout vs Login */}
+      {loggedIn ? (
+        <li>
+          <button
+            type="button"
+            onClick={handleLogout}
+            className={navbarStyles.mobileMenuItem}
+          >
+            <LogOut className={navbarStyles.mobileMenuIcon} />
+            Logout
+          </button>
+        </li>
+      ) : (
+        <li>
+          <NavLink
+            to="/login"
+            className={navbarStyles.mobileMenuItem}
+            onClick={() => setMenuOpen(false)}
+          >
+            <LogIn className={navbarStyles.mobileMenuIcon} />
+            Login
+          </NavLink>
+        </li>
+      )}
+    </ul>
+  </div>
+)}
         </div>
       </div>
 
